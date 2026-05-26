@@ -1,0 +1,12 @@
+venv/
+runs/
+datasets/
+model/
+__pycache__/
+app/__pycache__/
+**/__pycache__/
+*.pt
+*.pyc
+*.pyo
+.env
+.DS_Store
