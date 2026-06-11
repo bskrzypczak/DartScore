@@ -8,25 +8,18 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.ui.graphics.vector.ImageVector
 
-// Wszystkie trasy w jednym miejscu, żeby nie rozsiewać "magic stringów".
 object Routes {
-    // ekrany grafu Auth
     const val LOGIN = "login"
     const val REGISTER = "register"
-
-    // zakładki paska (graf Main)
     const val HOME = "home"
     const val FRIENDS = "friends"
-    const val PLAY = "play"          // start zakładki "Graj" = konfiguracja gry
+    const val PLAY = "play"
     const val TRAINING = "training"
     const val SETTINGS = "settings"
-
-    // flow meczu (osiągany z zakładki "Graj")
     const val MATCH = "match"
     const val VICTORY = "victory"
 }
 
-// Definicja jednej zakładki dolnego paska.
 enum class TopLevelTab(
     val route: String,
     val label: String,
