@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dartscore.feature.auth.data.AuthRepository
 import com.dartscore.feature.auth.domain.AuthState
+import com.dartscore.feature.profile.data.ProfileRepository
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -16,8 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// Stan ekranów logowania/rejestracji. authState (do nawigacji) jest osobno,
-// bo płynie wprost z repozytorium i nie zależy od tego ViewModelu.
 data class AuthUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -26,6 +25,7 @@ data class AuthUiState(
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repository: AuthRepository,
+    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
     val authState: StateFlow<AuthState> = repository.authState
@@ -38,7 +38,12 @@ class AuthViewModel @Inject constructor(
             _uiState.value = AuthUiState(errorMessage = "Podaj email i hasło")
             return
         }
-        launchAuth { repository.signIn(email, password) }
+        launchAuth {
+            repository.signIn(email, password)
+            // Idempotentne: zakłada profil, jeśli konto powstało zanim mieliśmy Firestore.
+            // runCatching, by ewentualny błąd profilu nie psuł samego logowania.
+            runCatching { profileRepository.ensureProfile() }
+        }
     }
 
     fun register(name: String, email: String, password: String) {
@@ -46,7 +51,11 @@ class AuthViewModel @Inject constructor(
             _uiState.value = AuthUiState(errorMessage = "Uzupełnij wszystkie pola")
             return
         }
-        launchAuth { repository.register(email, password, name) }
+        launchAuth {
+            repository.register(email, password, name)
+            // Po rejestracji tworzymy publiczny profil w Firestore.
+            runCatching { profileRepository.ensureProfile() }
+        }
     }
 
     fun signOut() = repository.signOut()
@@ -55,7 +64,6 @@ class AuthViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 
-    // Wspólny przebieg: ładowanie -> akcja -> sukces (nawigacja zrobi listener) lub błąd.
     private fun launchAuth(action: suspend () -> Unit) {
         viewModelScope.launch {
             _uiState.value = AuthUiState(isLoading = true)
@@ -69,7 +77,6 @@ class AuthViewModel @Inject constructor(
     }
 }
 
-// Surowe wyjątki Firebase -> czytelne komunikaty PL.
 private fun Throwable.toFriendlyMessage(): String = when (this) {
     is FirebaseAuthInvalidCredentialsException -> "Nieprawidłowy email lub hasło"
     is FirebaseAuthInvalidUserException -> "Nie znaleziono konta dla tego adresu"
