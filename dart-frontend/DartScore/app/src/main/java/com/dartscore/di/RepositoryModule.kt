@@ -4,8 +4,10 @@ import com.dartscore.feature.auth.data.AuthRepository
 import com.dartscore.feature.auth.data.FirebaseAuthRepository
 import com.dartscore.feature.friends.data.FirestoreFriendsRepository
 import com.dartscore.feature.friends.data.FriendsRepository
+import com.dartscore.feature.play.data.DartboardScanRepository
 import com.dartscore.feature.play.data.FirestoreMatchRepository
 import com.dartscore.feature.play.data.MatchRepository
+import com.dartscore.feature.play.data.RetrofitDartboardScanRepository
 import com.dartscore.feature.profile.data.FirestoreProfileRepository
 import com.dartscore.feature.profile.data.ProfileRepository
 import dagger.Binds
@@ -34,4 +36,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindFriendsRepository(impl: FirestoreFriendsRepository): FriendsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindScanRepository(impl: RetrofitDartboardScanRepository): DartboardScanRepository
 }

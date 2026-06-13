@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.dartscore"
-        minSdk = 24
+        minSdk = 31
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -68,4 +68,13 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.guava)
+    implementation(libs.coil.compose)
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
 }

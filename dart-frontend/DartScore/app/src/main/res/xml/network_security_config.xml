@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Zezwala na HTTP (bez TLS) tylko do dev-serwera. Produkcyjnie używaj https. -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <!-- Dla fizycznego telefonu dodaj IP komputera w LAN, np.: -->
+        <!-- <domain includeSubdomains="true">192.168.1.50</domain> -->
+    </domain-config>
+</network-security-config>

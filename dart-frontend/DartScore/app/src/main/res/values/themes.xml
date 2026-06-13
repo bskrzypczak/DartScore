@@ -3,7 +3,8 @@
     <!-- Bazowy motyw okna. Właściwy UI rysuje Compose (DartScoreTheme).
          Parent ustawiony na motyw frameworka, by nie ciągnąć dodatkowych zależności XML. -->
     <style name="Theme.DartScore" parent="android:Theme.DeviceDefault.NoActionBar">
-        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowBackground">#222D3C</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowSplashScreenBackground">#222D3C</item>
     </style>
 </resources>

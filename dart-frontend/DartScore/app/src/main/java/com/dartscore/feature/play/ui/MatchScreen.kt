@@ -14,7 +14,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items as gridItems
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -57,6 +57,16 @@ fun MatchScreen(
         return
     }
 
+    var showScanner by remember { mutableStateOf(false) }
+    if (showScanner) {
+        ScanScreen(
+            onCancel = { showScanner = false },
+            // TODO (następny krok): wyślij zdjęcie do backendu i zamień odczyt na lotki.
+            onPhotoConfirmed = { showScanner = false },
+        )
+        return
+    }
+
     var multiplier by remember { mutableStateOf(Multiplier.SINGLE) }
     val current = s.currentPlayer
 
@@ -68,8 +78,8 @@ fun MatchScreen(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text("Mecz ${s.config.mode.label}", style = MaterialTheme.typography.titleLarge)
                 Row {
-                    IconButton(onClick = { /* mock skanowania tarczy – wkrótce */ }) {
-                        Icon(Icons.Outlined.Edit, contentDescription = "Skanuj tarczę")
+                    IconButton(onClick = { showScanner = true }) {
+                        Icon(Icons.Outlined.Star, contentDescription = "Skanuj tarczę")
                     }
                     OutlinedButton(onClick = { viewModel.leaveGame(); onQuit() }) { Text("Wyjdź") }
                 }
