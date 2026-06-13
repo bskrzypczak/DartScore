@@ -62,7 +62,7 @@ class FriendsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 block()
-                _uiState.update { it.copy(message = successMessage) }
+                _uiState.update { it.copy(message = successMessage, searchResults = emptyList()) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(message = e.message ?: "Coś poszło nie tak") }
             }

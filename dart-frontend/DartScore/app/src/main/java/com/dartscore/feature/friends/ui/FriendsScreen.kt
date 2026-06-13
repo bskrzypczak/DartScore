@@ -59,7 +59,7 @@ fun FriendsScreen(viewModel: FriendsViewModel = hiltViewModel()) {
 
         if (ui.searchResults.isNotEmpty()) {
             item { SectionTitle("Wyniki wyszukiwania") }
-            items(ui.searchResults, key = { it.uid }) { result ->
+            items(ui.searchResults, key = { "search_${it.uid}" }) { result ->
                 PersonRow(
                     name = result.displayName,
                     actionLabel = "Zaproś",
@@ -70,7 +70,7 @@ fun FriendsScreen(viewModel: FriendsViewModel = hiltViewModel()) {
 
         if (ui.requests.isNotEmpty()) {
             item { SectionTitle("Zaproszenia (${ui.requests.size})") }
-            items(ui.requests, key = { it.fromUid }) { request ->
+            items(ui.requests, key = { "req_${it.fromUid}" }) { request ->
                 Card(Modifier.fillMaxWidth()) {
                     Row(
                         Modifier.fillMaxWidth().padding(12.dp),
@@ -91,7 +91,7 @@ fun FriendsScreen(viewModel: FriendsViewModel = hiltViewModel()) {
         if (ui.friends.isEmpty()) {
             item { Text("Nie masz jeszcze znajomych.", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
-        items(ui.friends, key = { it.uid }) { friend ->
+        items(ui.friends, key = { "friend_${it.uid}" }) { friend ->
             PersonRow(
                 name = friend.displayName,
                 actionLabel = "Usuń",

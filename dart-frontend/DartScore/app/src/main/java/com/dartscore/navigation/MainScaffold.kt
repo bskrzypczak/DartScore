@@ -47,13 +47,11 @@ fun MainScaffold() {
                             selected = selected,
                             onClick = {
                                 navController.navigate(tab.route) {
-                                    // Standardowy wzorzec zakładek: zapisz/odtwórz stan,
-                                    // nie buduj stosu duplikatów.
                                     popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                        saveState = tab.route != Routes.PLAY
                                     }
                                     launchSingleTop = true
-                                    restoreState = true
+                                    restoreState = tab.route != Routes.PLAY
                                 }
                             },
                             icon = { Icon(tab.icon, contentDescription = tab.label) },
@@ -95,9 +93,7 @@ fun MainScaffold() {
                 VictoryScreen(
                     onBackToHome = {
                         navController.navigate(Routes.HOME) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
+                            popUpTo(Routes.PLAY) { inclusive = true }   // zdejmij PLAY+MATCH+VICTORY ze stosu
                             launchSingleTop = true
                         }
                     },
