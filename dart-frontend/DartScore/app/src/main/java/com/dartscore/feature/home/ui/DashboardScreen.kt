@@ -1,17 +1,21 @@
 package com.dartscore.feature.home.ui
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -23,10 +27,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dartscore.core.designsystem.Accent
+import com.dartscore.core.designsystem.BorderGray
+import com.dartscore.core.designsystem.LightGrayText
+import com.dartscore.core.designsystem.LossColor
+import com.dartscore.core.designsystem.WinColor
 import com.dartscore.feature.play.domain.MatchRecord
+
 
 @Composable
 fun DashboardScreen(viewModel: HomeViewModel = hiltViewModel()) {
@@ -34,71 +47,82 @@ fun DashboardScreen(viewModel: HomeViewModel = hiltViewModel()) {
     var showAddDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         item {
-            val p = ui.profile
-            Text("Cześć, ${p?.displayName ?: "..."}", style = MaterialTheme.typography.headlineMedium)
+            Text(
+                "Cześć, ${ui.profile?.displayName ?: "..."}",
+                color = Color.White,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+            )
         }
         item {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatCard("PPD", ui.profile?.ppd?.let { String.format("%.1f", it) } ?: "-", Modifier.weight(1f))
-                StatCard("Win %", ui.profile?.let { "${it.winRate}%" } ?: "-", Modifier.weight(1f))
-                StatCard("180s", ui.profile?.total180s?.toString() ?: "-", Modifier.weight(1f))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                StatBox(ui.profile?.ppd?.let { "%.1f".format(it) } ?: "-", "PPD", Modifier.weight(1f))
+                StatBox(ui.profile?.let { "${it.winRate}%" } ?: "-", "WIN %", Modifier.weight(1f))
+                StatBox(ui.profile?.total180s?.toString() ?: "-", "180s", Modifier.weight(1f))
             }
         }
         item {
-            Button(onClick = { showAddDialog = true }, modifier = Modifier.fillMaxWidth()) {
-                Text("Dodaj mecz")
-            }
+            Button(
+                onClick = { showAddDialog = true },
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Accent, contentColor = Color.Black),
+            ) { Text("DODAJ MECZ", fontWeight = FontWeight.Bold, letterSpacing = 1.sp) }
         }
-        item {
-            Text("Ostatnie mecze (${ui.matches.size})", style = MaterialTheme.typography.titleMedium)
-        }
+        item { SectionLabel("OSTATNIE MECZE (${ui.matches.size})") }
         if (ui.matches.isEmpty()) {
-            item { Text("Brak meczów. Dodaj pierwszy!", color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            item { Text("Brak meczów. Dodaj pierwszy!", color = LightGrayText) }
         }
-        items(ui.matches, key = { it.id }) { match ->
-            Card(Modifier.fillMaxWidth()) {
-                Row(
-                    Modifier.fillMaxWidth().padding(12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column {
-                        Text(
-                            if (match.won) "Wygrana z ${match.opponentName}" else "Porażka z ${match.opponentName}",
-                            color = if (match.won) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                        )
-                        Text(
-                            "${match.mode} • ${match.legsScore} • PPD ${String.format("%.1f", match.ppd)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-        }
+        items(ui.matches, key = { it.id }) { match -> MatchRow(match) }
     }
 
     if (showAddDialog) {
         AddMatchDialog(
             onDismiss = { showAddDialog = false },
-            onConfirm = { record ->
-                viewModel.addMatch(record)
-                showAddDialog = false
-            },
+            onConfirm = { record -> viewModel.addMatch(record); showAddDialog = false },
         )
     }
 }
 
 @Composable
-private fun StatCard(label: String, value: String, modifier: Modifier = Modifier) {
-    Card(modifier) {
-        Column(Modifier.padding(16.dp)) {
-            Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(value, style = MaterialTheme.typography.titleLarge)
+private fun SectionLabel(text: String) {
+    Text(text, color = LightGrayText, fontSize = 12.sp, letterSpacing = 1.5.sp, fontWeight = FontWeight.Bold)
+}
+
+@Composable
+private fun StatBox(value: String, label: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.border(1.dp, BorderGray, RoundedCornerShape(12.dp)).padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(value, color = Accent, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(4.dp))
+            Text(label, color = LightGrayText, fontSize = 10.sp, letterSpacing = 1.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+        }
+    }
+}
+
+@Composable
+private fun MatchRow(match: MatchRecord) {
+    Box(
+        Modifier.fillMaxWidth().border(1.dp, BorderGray, RoundedCornerShape(12.dp)).padding(16.dp),
+    ) {
+        Column {
+            Text(
+                if (match.won) "Wygrana z ${match.opponentName}" else "Porażka z ${match.opponentName}",
+                color = if (match.won) WinColor else LossColor,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "${match.mode} • ${match.legsScore} • PPD ${"%.1f".format(match.ppd)}",
+                color = LightGrayText,
+                fontSize = 13.sp,
+            )
         }
     }
 }
@@ -131,20 +155,23 @@ private fun AddMatchDialog(onDismiss: () -> Unit, onConfirm: (MatchRecord) -> Un
             }
         },
         confirmButton = {
-            Button(onClick = {
-                onConfirm(
-                    MatchRecord(
-                        mode = mode.toIntOrNull() ?: 501,
-                        won = won,
-                        opponentName = opponent.ifBlank { "Przeciwnik" },
-                        legsScore = legs,
-                        dartsThrown = darts.toIntOrNull() ?: 0,
-                        pointsScored = points.toIntOrNull() ?: 0,
-                        count180s = oneEighties.toIntOrNull() ?: 0,
+            Button(
+                onClick = {
+                    onConfirm(
+                        MatchRecord(
+                            mode = mode.toIntOrNull() ?: 501,
+                            won = won,
+                            opponentName = opponent.ifBlank { "Przeciwnik" },
+                            legsScore = legs,
+                            dartsThrown = darts.toIntOrNull() ?: 0,
+                            pointsScored = points.toIntOrNull() ?: 0,
+                            count180s = oneEighties.toIntOrNull() ?: 0,
+                        )
                     )
-                )
-            }) { Text("Zapisz") }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Accent, contentColor = Color.Black),
+            ) { Text("Zapisz") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Anuluj", color = LightGrayText) } },
     )
 }

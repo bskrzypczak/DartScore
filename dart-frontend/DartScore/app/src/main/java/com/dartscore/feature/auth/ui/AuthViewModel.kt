@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.dartscore.feature.auth.data.AuthRepository
 import com.dartscore.feature.auth.domain.AuthState
 import com.dartscore.feature.profile.data.ProfileRepository
+import com.dartscore.feature.profile.domain.PlayerProfile
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -12,8 +13,10 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,6 +32,10 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     val authState: StateFlow<AuthState> = repository.authState
+
+    // Profil zalogowanego gracza (imię + statystyki) – na żywo z Firestore.
+    val profile: StateFlow<PlayerProfile?> = profileRepository.observeMyProfile()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()

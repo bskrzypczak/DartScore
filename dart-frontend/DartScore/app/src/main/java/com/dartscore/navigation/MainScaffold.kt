@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -24,7 +27,11 @@ import com.dartscore.feature.settings.ui.SettingsScreen
 import com.dartscore.feature.training.ui.TrainingScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.dartscore.core.designsystem.Accent
+import com.dartscore.core.designsystem.Background
+import com.dartscore.core.designsystem.LightGrayText
 import com.dartscore.feature.training.ui.TrainingDetailsScreen
+import com.dartscore.feature.training.ui.TrainingGameScreen
 
 private val tabRoutes = TopLevelTab.entries.map { it.route }.toSet()
 
@@ -41,7 +48,7 @@ fun MainScaffold() {
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
+                NavigationBar (containerColor = Background){
                     TopLevelTab.entries.forEach { tab ->
                         val selected = currentDestination
                             ?.hierarchy
@@ -57,8 +64,18 @@ fun MainScaffold() {
                                     restoreState = true
                                 }
                             },
-                            icon = { Icon(tab.icon, contentDescription = tab.label) },
+                            icon = { Icon(
+                                painter = painterResource(id = tab.icon),
+                                contentDescription = tab.label
+                            ) },
                             label = { Text(tab.label) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color.Black,
+                                selectedTextColor = Accent,
+                                indicatorColor = Accent,
+                                unselectedIconColor = LightGrayText,
+                                unselectedTextColor = LightGrayText,
+                            ),
                         )
                     }
                 }
@@ -88,6 +105,16 @@ fun MainScaffold() {
                 TrainingDetailsScreen(
                     modeId = entry.arguments?.getString("modeId"),
                     onBack = { navController.popBackStack() },
+                    onStart = { id -> navController.navigate("${Routes.TRAINING_GAME}/$id") },
+                )
+            }
+            composable(
+                route = "${Routes.TRAINING_GAME}/{modeId}",
+                arguments = listOf(navArgument("modeId") { type = NavType.StringType }),
+            ) { entry ->
+                TrainingGameScreen(
+                    modeId = entry.arguments?.getString("modeId"),
+                    onExit = { navController.popBackStack() },
                 )
             }
             composable(Routes.SETTINGS) { SettingsScreen() }

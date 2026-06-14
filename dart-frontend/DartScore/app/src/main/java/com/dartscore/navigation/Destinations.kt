@@ -6,7 +6,10 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import com.dartscore.R
 
 object Routes {
     const val LOGIN = "login"
@@ -19,16 +22,17 @@ object Routes {
     const val MATCH = "match"
     const val VICTORY = "victory"
     const val TRAINING_DETAILS = "training_details"
+    const val TRAINING_GAME = "training_game"
 }
 
 enum class TopLevelTab(
     val route: String,
     val label: String,
-    val icon: ImageVector,
+    val icon: Int,
 ) {
-    HOME(Routes.HOME, "Home", Icons.Outlined.Home),
-    FRIENDS(Routes.FRIENDS, "Znajomi", Icons.Outlined.Refresh),
-    PLAY(Routes.PLAY, "Graj", Icons.Outlined.Warning),
-    TRAINING(Routes.TRAINING, "Trening", Icons.Outlined.Info),
-    SETTINGS(Routes.SETTINGS, "Ustawienia", Icons.Outlined.Settings),
+    HOME(Routes.HOME, "Home", R.drawable.ico_home),
+    FRIENDS(Routes.FRIENDS, "Znajomi", R.drawable.ico_friends),
+    PLAY(Routes.PLAY, "Graj", R.drawable.ico_scoreboard),
+    TRAINING(Routes.TRAINING, "Trening", R.drawable.ico_training),
+    SETTINGS(Routes.SETTINGS, "Ustawienia", R.drawable.ico_settings),
 }

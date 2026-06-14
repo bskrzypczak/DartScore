@@ -1,13 +1,5 @@
 package com.dartscore.feature.settings.ui
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.dartscore.feature.auth.ui.AuthViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,6 +15,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,189 +24,153 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dartscore.core.designsystem.Background
-
-val LightGrayText = Color(0xFFA0AAB0)
-val BorderGray = Color(0xFF404A50)
+import com.dartscore.feature.auth.ui.AuthViewModel
+import com.dartscore.core.designsystem.Accent
+import com.dartscore.core.designsystem.BorderGray
+import com.dartscore.core.designsystem.LightGrayText
 
 @Composable
 fun SettingsScreen(viewModel: AuthViewModel = hiltViewModel()) {
+    val profile by viewModel.profile.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.height(48.dp)) // Miejsce na status bar
+        Spacer(Modifier.height(48.dp))
 
-        // 1. Sekcja Profilu (Zdjęcie + Imię)
-        ProfileHeader()
+        ProfileHeader(name = profile?.displayName ?: "Gracz")
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(Modifier.height(48.dp))
 
-        // 2. Sekcja Umiejętności (Skills)
-        SkillsSection()
+        StatsSection(
+            ppd = profile?.ppd?.let { "%.1f".format(it) } ?: "-",
+            winRate = profile?.let { "${it.winRate}%" } ?: "-",
+            count180 = profile?.total180s?.toString() ?: "-",
+        )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(Modifier.height(48.dp))
 
-        // 3. Sekcja Menu
         MenuSection(viewModel)
     }
 }
 
 @Composable
-fun ProfileHeader() {
+fun ProfileHeader(name: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        // Zdjęcie z nakładką edycji
-        Box(
-            modifier = Modifier.size(120.dp)
-        ) {
-            // Zaślepka na zdjęcie (w prawdziwej apce użyj np. Coil i AsyncImage)
+        Box(modifier = Modifier.size(120.dp)) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(CircleShape)
-                    .background(Color.Gray),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize().clip(CircleShape).background(Color.Gray),
+                contentAlignment = Alignment.Center,
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(64.dp)
-                )
+                Icon(Icons.Default.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(64.dp))
             }
-
-            // Przycisk edycji (ołówek)
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(Background) // Tło dopasowane do tła ekranu, żeby wyciąć obwódkę
-                    .padding(2.dp) // Grubość "wycięcia"
+                    .background(Background)
+                    .padding(2.dp),
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape)
                         .border(1.dp, BorderGray, CircleShape)
-                        .background(Color.Transparent)
                         .clickable { /* TODO: Edycja zdjęcia */ },
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edytuj zdjęcie",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    Icon(Icons.Default.Edit, contentDescription = "Edytuj zdjęcie", tint = Color.White, modifier = Modifier.size(16.dp))
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
-        // Imię i nazwisko
         Text(
-            text = "Eleanor Rigby",
+            text = name,
             color = Color.White,
             fontSize = 28.sp,
             fontWeight = FontWeight.Normal,
-            fontFamily = MaterialTheme.typography.headlineLarge.fontFamily // Tu możesz podpiąć font szeryfowy (serif)
+            fontFamily = MaterialTheme.typography.headlineLarge.fontFamily,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Status
         Text(
-            text = "MEMBER SINCE 2025",
+            text = "DARTSCORE PLAYER",
             color = LightGrayText,
             fontSize = 12.sp,
             letterSpacing = 1.5.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
     }
 }
 
 @Composable
-fun SkillsSection() {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Nagłówek sekcji z ikoną
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { /* TODO: Edycja skilli */ }
-        ) {
-            Text(
-                text = "SKILLS",
-                color = LightGrayText,
-                fontSize = 12.sp,
-                letterSpacing = 1.5.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Edytuj umiejętności",
-                tint = LightGrayText,
-                modifier = Modifier.size(14.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Pigułki z umiejętnościami
-        // Używamy Row (lub FlowRow jeśli jest ich dużo i mają przechodzić do nowej linii)
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            SkillPill(text = "PHOTOGRAPHY", modifier = Modifier.weight(1f))
-            SkillPill(text = "WRITING", modifier = Modifier.weight(1f))
-            SkillPill(text = "GRAPHIC DESIGN", modifier = Modifier.weight(1f))
+fun StatsSection(ppd: String, winRate: String, count180: String) {
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = "STATYSTYKI",
+            color = LightGrayText,
+            fontSize = 12.sp,
+            letterSpacing = 1.5.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(Modifier.height(16.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+            StatBox(value = ppd, label = "PPD", modifier = Modifier.weight(1f))
+            StatBox(value = winRate, label = "WIN %", modifier = Modifier.weight(1f))
+            StatBox(value = count180, label = "180s", modifier = Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-fun SkillPill(text: String, modifier: Modifier = Modifier) {
+fun StatBox(value: String, label: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .border(1.dp, BorderGray, RoundedCornerShape(50))
-            .padding(vertical = 10.dp, horizontal = 4.dp),
-        contentAlignment = Alignment.Center
+            .border(1.dp, BorderGray, RoundedCornerShape(12.dp))
+            .padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = text,
-            color = LightGrayText,
-            fontSize = 10.sp,
-            letterSpacing = 0.5.sp,
-            fontWeight = FontWeight.Bold,
-            maxLines = 1
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(value, color = Accent, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = label,
+                color = LightGrayText,
+                fontSize = 10.sp,
+                letterSpacing = 1.5.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+            )
+        }
     }
 }
 
 @Composable
 fun MenuSection(viewModel: AuthViewModel = hiltViewModel()) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        MenuListItem(text = "PORTFOLIO")
-        MenuListItem(text = "INFORMATIONS")
-        MenuListItem(text = "SETTINGS")
-        MenuListItem(text = "MY ACCOUNT")
+        MenuListItem(text = "MOJE KONTO")
+        MenuListItem(text = "INFORMACJE")
+        MenuListItem(text = "USTAWIENIA")
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
         HorizontalDivider(color = BorderGray, thickness = 1.dp)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
         MenuListItem(
-            text = "LOGOUT",
+            text = "WYLOGUJ",
             icon = Icons.AutoMirrored.Filled.ExitToApp,
-            onClick = { viewModel.signOut() }
+            onClick = { viewModel.signOut() },
         )
     }
 }
@@ -222,7 +179,7 @@ fun MenuSection(viewModel: AuthViewModel = hiltViewModel()) {
 fun MenuListItem(
     text: String,
     icon: ImageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -230,19 +187,9 @@ fun MenuListItem(
             .clickable { onClick() }
             .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(
-            text = text,
-            color = Color.White,
-            fontSize = 14.sp,
-            letterSpacing = 1.sp
-        )
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = LightGrayText,
-            modifier = Modifier.size(24.dp)
-        )
+        Text(text = text, color = Color.White, fontSize = 14.sp, letterSpacing = 1.sp)
+        Icon(imageVector = icon, contentDescription = null, tint = LightGrayText, modifier = Modifier.size(24.dp))
     }
 }
