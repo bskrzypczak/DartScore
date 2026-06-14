@@ -8,10 +8,10 @@ import androidx.compose.runtime.Composable
 // MVP: jeden ciemny motyw zgodny z designem webowym.
 // Light scheme dorobimy później (Settings ma już przełącznik motywu w designie).
 private val DarkColors = darkColorScheme(
-    primary = Emerald600,
+    primary = ButtonOrange,
     onPrimary = androidx.compose.ui.graphics.Color.White,
     secondary = Blue500,
-    background = Slate900,
+    background = Background,
     onBackground = androidx.compose.ui.graphics.Color.White,
     surface = Slate800,
     onSurface = Slate300,

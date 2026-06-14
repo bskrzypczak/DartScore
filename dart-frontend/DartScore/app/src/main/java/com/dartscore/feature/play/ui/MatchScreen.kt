@@ -90,15 +90,17 @@ fun MatchScreen(
             PlayerCard(player, isCurrent = player.id == current.id)
         }
 
-        // Placeholder podpowiedzi checkoutu (gdy <= 180).
+        // Podpowiedzi checkoutu (gdy <= 180).
         if (current.remaining in 2..180) {
             item {
                 Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-                    Text(
-                        "Checkout dla ${current.remaining}: (podpowiedzi wkrótce)",
-                        Modifier.padding(12.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    if (viewModel.getCheckoutHint(current.remaining)!= null){
+                        Text(
+                            "Sugerowany checkout: ${viewModel.getCheckoutHint(current.remaining)}",
+                            Modifier.padding(12.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }

@@ -48,10 +48,10 @@ fun MainScaffold() {
                             onClick = {
                                 navController.navigate(tab.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = tab.route != Routes.PLAY
+                                        saveState = true
                                     }
                                     launchSingleTop = true
-                                    restoreState = tab.route != Routes.PLAY
+                                    restoreState = true
                                 }
                             },
                             icon = { Icon(tab.icon, contentDescription = tab.label) },

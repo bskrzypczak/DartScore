@@ -19,7 +19,7 @@ object NetworkModule {
     // EMULATOR: 10.0.2.2 = host (Twój komputer). Zostaw to do testów na emulatorze.
     // FIZYCZNY TELEFON: wpisz IP komputera w sieci LAN, np. "http://192.168.1.50:8000/"
     //   (telefon i komputer w tej samej sieci Wi-Fi). Slash na końcu jest wymagany.
-    private const val BASE_URL = "http://10.0.2.2:8000/"
+    private const val BASE_URL = "http://172.20.10.3:8000/"
 
     @Provides
     @Singleton

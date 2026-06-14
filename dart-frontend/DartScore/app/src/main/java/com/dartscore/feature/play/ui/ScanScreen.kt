@@ -2,7 +2,6 @@ package com.dartscore.feature.play.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -12,7 +11,6 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +46,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import java.io.File
 
 @Composable
@@ -103,15 +102,12 @@ fun ScanScreen(
                 modifier = Modifier.align(Alignment.BottomCenter).padding(24.dp),
             ) { Text("Zrób zdjęcie") }
         } else {
-            val bitmap = remember(file.path) { BitmapFactory.decodeFile(file.path) }
-            if (bitmap != null) {
-                Image(
-                    bitmap = bitmap.asImageBitmap(),
-                    contentDescription = "Wykonane zdjęcie",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                )
-            }
+            AsyncImage(
+                model = file,
+                contentDescription = "Wykonane zdjęcie",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
 
             fun retake() {
                 file.delete(); capturedFile = null; viewModel.reset()

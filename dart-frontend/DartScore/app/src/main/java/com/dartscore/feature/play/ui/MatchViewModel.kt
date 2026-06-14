@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dartscore.feature.play.data.MatchRepository
 import com.dartscore.feature.play.domain.BotLevel
+import com.dartscore.feature.play.domain.CheckoutProvider
 import com.dartscore.feature.play.domain.Dart
 import com.dartscore.feature.play.domain.EntryRule
 import com.dartscore.feature.play.domain.GameSession
 import com.dartscore.feature.play.domain.GameState
 import com.dartscore.feature.play.domain.GameStatus
 import com.dartscore.feature.play.domain.Multiplier
-import com.dartscore.feature.play.domain.MatchType
 import com.dartscore.feature.play.domain.MatchRecord
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -93,4 +93,10 @@ class MatchViewModel @Inject constructor(
     }
 
     fun leaveGame() = session.reset()
+
+    fun getCheckoutHint(remainingScore: Int): String? {
+        if (remainingScore > 170) return null
+
+        return CheckoutProvider.getHint(remainingScore)
+    }
 }
