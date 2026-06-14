@@ -17,5 +17,6 @@ class GameSession @Inject constructor() {
     fun addDart(dart: Dart) { _state.value = _state.value?.let { X01Engine.addDart(it, dart) } }
     fun undo() { _state.value = _state.value?.let { X01Engine.undoDart(it) } }
     fun confirm() { _state.value = _state.value?.let { X01Engine.confirmTurn(it) } }
+    fun loadTurn(darts: List<Dart>) { _state.value = _state.value?.let { X01Engine.setTurn(it, darts) } }
     fun reset() { _state.value = null }
 }

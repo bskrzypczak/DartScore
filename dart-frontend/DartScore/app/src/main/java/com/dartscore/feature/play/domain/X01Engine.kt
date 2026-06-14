@@ -25,6 +25,10 @@ object X01Engine {
         if (state.currentTurn.isEmpty()) state
         else state.copy(currentTurn = state.currentTurn.dropLast(1))
 
+    // Wczytuje całą turę naraz (np. ze skanu) – maks 3 lotki, do dalszej korekty.
+    fun setTurn(state: GameState, darts: List<Dart>): GameState =
+        if (state.isFinished) state else state.copy(currentTurn = darts.take(3))
+
     fun confirmTurn(state: GameState): GameState {
         if (state.isFinished || state.currentTurn.isEmpty()) return state
         val p = state.currentPlayer

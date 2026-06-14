@@ -11,6 +11,8 @@ import com.dartscore.feature.play.domain.GameSession
 import com.dartscore.feature.play.domain.GameState
 import com.dartscore.feature.play.domain.GameStatus
 import com.dartscore.feature.play.domain.Multiplier
+import com.dartscore.feature.play.domain.parseDartScore
+import com.dartscore.feature.play.domain.MatchType
 import com.dartscore.feature.play.domain.MatchRecord
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -34,6 +36,13 @@ class MatchViewModel @Inject constructor(
     }
 
     fun undo() = session.undo()
+
+    // Wczytuje odczyt ze skanu jako bieżącą turę (gracz może ją skorygować i zatwierdzić).
+    fun applyScan(darts: List<String>) {
+        val s = session.state.value ?: return
+        if (s.currentPlayer.isBot) return
+        session.loadTurn(darts.mapNotNull { parseDartScore(it) })
+    }
 
     fun confirm() {
         session.confirm()

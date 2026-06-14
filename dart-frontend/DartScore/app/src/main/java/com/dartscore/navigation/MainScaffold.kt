@@ -22,6 +22,9 @@ import com.dartscore.feature.play.ui.MatchScreen
 import com.dartscore.feature.play.ui.VictoryScreen
 import com.dartscore.feature.settings.ui.SettingsScreen
 import com.dartscore.feature.training.ui.TrainingScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.dartscore.feature.training.ui.TrainingDetailsScreen
 
 private val tabRoutes = TopLevelTab.entries.map { it.route }.toSet()
 
@@ -73,7 +76,20 @@ fun MainScaffold() {
             composable(Routes.PLAY) {
                 GameSetupScreen(onStartMatch = { navController.navigate(Routes.MATCH) })
             }
-            composable(Routes.TRAINING) { TrainingScreen() }
+            composable(Routes.TRAINING) {
+                TrainingScreen(onModeClick = { id ->
+                    navController.navigate("${Routes.TRAINING_DETAILS}/$id")
+                })
+            }
+            composable(
+                route = "${Routes.TRAINING_DETAILS}/{modeId}",
+                arguments = listOf(navArgument("modeId") { type = NavType.StringType }),
+            ) { entry ->
+                TrainingDetailsScreen(
+                    modeId = entry.arguments?.getString("modeId"),
+                    onBack = { navController.popBackStack() },
+                )
+            }
             composable(Routes.SETTINGS) { SettingsScreen() }
 
             // --- flow meczu (z zakładki "Graj") ---

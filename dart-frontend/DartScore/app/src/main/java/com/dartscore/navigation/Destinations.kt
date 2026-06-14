@@ -18,6 +18,7 @@ object Routes {
     const val SETTINGS = "settings"
     const val MATCH = "match"
     const val VICTORY = "victory"
+    const val TRAINING_DETAILS = "training_details"
 }
 
 enum class TopLevelTab(

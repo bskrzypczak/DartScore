@@ -2,6 +2,7 @@ package com.dartscore.feature.play.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -11,6 +12,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,11 +49,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.dartscore.feature.play.domain.ScanResult
 import java.io.File
 
 @Composable
 fun ScanScreen(
-    onPhotoConfirmed: (File) -> Unit,
+    onResult: (ScanResult) -> Unit,
     onCancel: () -> Unit,
     viewModel: ScanViewModel = hiltViewModel(),
 ) {
@@ -128,7 +131,7 @@ fun ScanScreen(
                         Text("Suma: ${st.result.total}" + if (st.result.mockMode) "  (tryb MOCK)" else "", color = Color.White)
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             OutlinedButton(onClick = { retake() }, modifier = Modifier.weight(1f)) { Text("Zrób nowe") }
-                            Button(onClick = { viewModel.reset(); onPhotoConfirmed(file) }, modifier = Modifier.weight(1f)) { Text("Gotowe") }
+                            Button(onClick = { viewModel.reset(); onResult(st.result) }, modifier = Modifier.weight(1f)) { Text("Gotowe") }
                         }
                     }
                     is ScanUiState.Error -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
